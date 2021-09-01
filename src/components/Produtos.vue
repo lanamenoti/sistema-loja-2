@@ -10,8 +10,9 @@
         </div>
       </div>
       <div class="row">
-        <div v-for="prod in productsFiltered" :key="prod.id" class="col-md-4">
-          <Card 
+        <div v-for="prod in productsFiltered" :key="prod._id" class="col-md-4">
+          <Card
+            :id="prod._id"
             :title="prod.title"
             :price="prod.price"
             :img="prod.img"
@@ -22,92 +23,74 @@
   </section>
 </template>
 <script>
-import Card from "./Card.vue";
+import Card from "./Card.vue"
 
 export default {
-  name : "Produtos",
-  components : {
-    Card
+  name: "Produtos",
+  components: {
+    Card,
   },
-  data : function(){
+  data: function() {
     return {
-      search : "",
-      produtos : [
-        {
-          id : 1,
-          title : "Red Dead Redemption II",
-          price : "100,00",
-          img : require('../assets/red-read.jpg'),
-        },
-        {
-          id: 2,
-          title : "Dshonored 2",
-          price : "89,90,",
-          img : require('../assets/dishonored.jpg'),
-        },
-        {
-          id : 3,
-          title : "Assassin's Creed Odyssey",
-          price : "129.90",
-          img : require('../assets/ACOdyssey.jpg'),
-        },
-        {
-          id : 4,
-          title : "Red Dead Redemption II",
-          price : "100,00",
-          img : require('../assets/red-read.jpg'),
-        },
-        {
-          id: 5,
-          title : "Dshonored 2",
-          price : "89,90,",
-          img : require('../assets/dishonored.jpg'),
-        },
-        {
-          id : 6,
-          title : "Assassin's Creed Odyssey",
-          price : "129,90",
-          img : require('../assets/ACOdyssey.jpg'),
-        },
-
-      ]
+      search: "",
+      produtos: [],
     }
   },
   computed: {
-    productsFiltered : function() {
-      return this.produtos.filter((event) =>
-        event.title.toLowerCase().indexOf(this.search.toLowerCase()) > -1 
+    productsFiltered: function() {
+      return this.produtos.filter(
+        (event) =>
+          event.title.toLowerCase().indexOf(this.search.toLowerCase()) > -1
       )
-    }
-  }
+    },
+  },
+  methods: {
+    getProdutos: async function() {
+      const result = await fetch("http://localhost:3000/produtos")
+        .then((res) => res.json())
+        .catch((erro) => {
+          return {
+            erro: true,
+            message: erro,
+          }
+        })
+
+      if (!result.erro) {
+        this.produtos = result
+      }
+    },
+  },
+  created: function() {
+    this.getProdutos()
+  },
 }
 </script>
 <style>
-  .produtos{
-    padding: 56px 0px;
-    background-color: #E2E2E2;
-    width: 100%;
-    min-height : 800px;
-  } 
+.produtos {
+  padding: 56px 0px;
+  background-color: #e2e2e2;
+  width: 100%;
+  min-height: 800px;
+}
 
-  .produtos .row{
-    align-items: flex-start;
-  }
+.produtos .row {
+  align-items: flex-start;
+}
 
-  .produtos h2{
-    font-size : 36px;
-    color: #ae382b;
-    padding: 0;
-    margin : 0;
-  } 
+.produtos h2 {
+  font-size: 36px;
+  color: #ae382b;
+  padding: 0;
+  margin: 0;
+}
 
-  .produtos input {
-    border-radius : 50px;
-    background-color: #f1f1f1;
-    border: none;
-    width: 70%;
-    height: 30px;
-    padding: 4px 14px;
-    float: right;    
-  }
+.produtos input {
+  border-radius: 50px;
+  background-color: #f1f1f1;
+  border: none;
+  width: 70%;
+  height: 30px;
+  padding: 4px 14px;
+  float: right;
+}
 </style>
