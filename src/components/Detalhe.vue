@@ -7,8 +7,8 @@
           <img :src="produto.img" alt="Red dead" />
         </div>
         <div class="col-md-9">
-          <h2>Red Dead Redemption II</h2>
-          <p>R$ 100,00</p>
+          <h2>{{ produto.title }}</h2>
+          <p>R$ {{ produto.price }}</p>
         </div>
         <div class="col-md-3">
           <div class="detalhe__box-price">
@@ -33,60 +33,80 @@
             leap into electronic typesetting, remaining essentially unchanged
           </p>
           <h4>
-            Total : {{ finalQuantity }} * 100,00 =
+            Total : {{ finalQuantity }} * {{ produto.price }} =
             {{ total.toString().replace(".", ",") }}
           </h4>
         </div>
         <div class="col-md-12">
-          <button>Fazer Pedido</button>
+          <button @click="ativarNovoPedido">Fazer Pedido</button>
+        </div>
+        <div v-if="deveAtivar">
+          <NovoPedido
+            :valorTotal="total"
+            :valorUnitario="preco"
+            :quantidade="quantity"
+          />
         </div>
       </div>
     </div>
   </section>
 </template>
 <script>
+import NovoPedido from "../components/NovoPedido.vue";
+
 export default {
   name: "Detalhe",
-  data: function() {
+  components: {
+    NovoPedido,
+  },
+  data: function () {
     return {
+      deveAtivar: false,
       quantity: 1,
-      finalQuantity: 1,
-      preco: 100,
+      finalQuantity: 0,
+      preco: 0,
       total: 0,
       produto: {},
-    }
+    };
   },
   methods: {
-    toCalculate: function() {
-      this.finalQuantity = this.quantity
+    toCalculate: function () {
+      this.finalQuantity = this.quantity;
 
       if (this.quantity === "") {
-        this.finalQuantity = 1
+        this.finalQuantity = 1;
       }
 
-      const total = this.preco * this.finalQuantity
-      this.total = total.toFixed(2)
+      const total = parseFloat(this.preco) * this.finalQuantity;
+      this.total = total.toFixed(2);
     },
-    // getProdutoById: async function() {
-    //   const result = await fetch(
-    //     `http://localhost:3000/produtos/${$route.params.id}`
-    //   )
-    //     .then((res) => res.json())
-    //     .catch((erro) => {
-    //       return {
-    //         erro: true,
-    //         message: erro,
-    //       }
-    //     })
+    getProdutoById: async function () {
+      const result = await fetch(
+        `http://localhost:3000/produtos/${this.$route.params.id}`
+      )
+        .then((res) => res.json())
+        .catch((erro) => {
+          return {
+            erro: true,
+            message: erro,
+          };
+        });
 
-    //   if (!result.erro) {
-    //     this.produto = result
-    //   }
-    // },
+      if (!result.erro) {
+        this.produto = result;
+        this.preco = result.price;
+      }
+    },
+    ativarNovoPedido: function () {
+      this.deveAtivar = !this.deveAtivar;
+    },
   },
-}
+  created: function () {
+    this.getProdutoById();
+  },
+};
 </script>
-<style>
+<style >
 .detalhe {
   padding: 50px 0px;
 }
