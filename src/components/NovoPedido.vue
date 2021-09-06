@@ -1,7 +1,8 @@
 <template>
   <section class="novoPedido">
-    <div class="row">
+    <div class="row" v-if="!pedidoCadastrado">
       <div class="col-md-12">
+        <hr />
         <h3>Novo Pedido</h3>
       </div>
       <div class="col-md-6">
@@ -20,6 +21,12 @@
         <button class="botao__salvar" @click="fazerPedido">
           Salvar Pedido
         </button>
+        <hr />
+      </div>
+    </div>
+    <div class="row" v-else>
+      <div class="col-md-4">
+        <p>Pedido cadastrado com sucesso!</p>
       </div>
     </div>
   </section>
@@ -29,42 +36,43 @@
 export default {
   name: "NovoPedido",
   props: {
-    valorTotal: Number,
+    valorTotal: String,
     valorUnitario: String,
-    quantidade: Number,
+    quantidade: String,
   },
-  data: function () {
+  data: function() {
     return {
       cpfCliente: "",
       cliente: {},
-    };
+      pedidoCadastrado: false,
+    }
   },
   methods: {
-    getClientePorCpf: async function () {
+    getClientePorCpf: async function() {
       const result = await fetch(
         `http://localhost:3000/clientes/busca/${this.cpfCliente}`
       )
         .then((res) => res.json())
         .catch((erro) => {
-          console.log(erro);
+          console.log(erro)
           return {
             erro: true,
             message: erro,
-          };
-        });
+          }
+        })
 
       if (!result.erro) {
-        this.cliente = result;
+        this.cliente = result
       }
     },
-    fazerPedido: async function () {
+    fazerPedido: async function() {
       const novoPedido = {
         produtoId: this.$route.params.id,
         ValorTotal: this.valorTotal,
         valorUnitario: this.valorUnitario,
         quantidade: this.quantidade,
         clienteCPF: this.cpfCliente,
-      };
+      }
 
       const result = await fetch(`http://localhost:3000/pedidos`, {
         headers: {
@@ -76,29 +84,27 @@ export default {
       })
         .then((res) => res.json())
         .catch((erro) => {
-          console.log(erro);
+          console.log(erro)
           return {
             erro: true,
             message: erro,
-          };
-        });
+          }
+        })
 
       if (!result.erro) {
-        console.log("entrou");
-        this.cliente = result;
-        console.log(result);
+        this.pedidoCadastrado = true
       }
     },
   },
-};
+}
 </script>
 
 <style>
 .novoPedido {
   margin: auto 0;
   margin-bottom: 20px;
-  border-top: 1px solid;
-  border-bottom: 1px solid;
+  /* border-bottom: 1px solid;
+  border-top: 1px solid; */
 }
 .novoPedido__info__cliente {
   display: flex;

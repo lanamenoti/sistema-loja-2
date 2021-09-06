@@ -42,9 +42,9 @@
         </div>
         <div v-if="deveAtivar">
           <NovoPedido
-            :valorTotal="total"
-            :valorUnitario="preco"
-            :quantidade="quantity"
+            :valorTotal="total.toString()"
+            :valorUnitario="preco.toString()"
+            :quantidade="quantity.toString()"
           />
         </div>
       </div>
@@ -52,35 +52,35 @@
   </section>
 </template>
 <script>
-import NovoPedido from "../components/NovoPedido.vue";
+import NovoPedido from "../components/NovoPedido.vue"
 
 export default {
   name: "Detalhe",
   components: {
     NovoPedido,
   },
-  data: function () {
+  data: function() {
     return {
       deveAtivar: false,
-      quantity: 1,
+      quantity: 0,
       finalQuantity: 0,
       preco: 0,
       total: 0,
       produto: {},
-    };
+    }
   },
   methods: {
-    toCalculate: function () {
-      this.finalQuantity = this.quantity;
+    toCalculate: function() {
+      this.finalQuantity = this.quantity
 
       if (this.quantity === "") {
-        this.finalQuantity = 1;
+        this.finalQuantity = 1
       }
 
-      const total = parseFloat(this.preco) * this.finalQuantity;
-      this.total = total.toFixed(2);
+      const total = parseFloat(this.preco) * this.finalQuantity
+      this.total = total.toFixed(2)
     },
-    getProdutoById: async function () {
+    getProdutoById: async function() {
       const result = await fetch(
         `http://localhost:3000/produtos/${this.$route.params.id}`
       )
@@ -89,24 +89,24 @@ export default {
           return {
             erro: true,
             message: erro,
-          };
-        });
+          }
+        })
 
       if (!result.erro) {
-        this.produto = result;
-        this.preco = result.price;
+        this.produto = result
+        this.preco = result.price
       }
     },
-    ativarNovoPedido: function () {
-      this.deveAtivar = !this.deveAtivar;
+    ativarNovoPedido: function() {
+      this.deveAtivar = !this.deveAtivar
     },
   },
-  created: function () {
-    this.getProdutoById();
+  created: function() {
+    this.getProdutoById()
   },
-};
+}
 </script>
-<style >
+<style>
 .detalhe {
   padding: 50px 0px;
 }
